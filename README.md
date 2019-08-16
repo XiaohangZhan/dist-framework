@@ -7,7 +7,7 @@ With this framework, your can:
 * High extensibility: customize your algorithm for any purpose.
 * High-efficiency distributed training, validation, evaluation, feature extraction.
 * Warmlup learning rate in multiple steps.
-* 
+*
 
 ### Requirements
 
@@ -18,12 +18,20 @@ With this framework, your can:
     pip install -r requirements.txt
     ```
 
-### Train
+### Usage
 
+    For example, Cifar resnet18
     ```
-    sh experiments/ImageNet/resnet50/train.sh
+    sh experiments/Cifar/resnet18/train.sh # train, don't forget to open tensorboard for visualization
+    sh experiments/Cifar/resnet18/validate.sh $ITER # offline validation
+    sh experiments/Cifar/resnet18/evaluate.sh $ITER # offline evaluation
+    sh experiments/Cifar/resnet18/extract.sh $ITER # feature extraction
     ```
+
+### Extensibility
+
+    You need to write your own Dataset in `dataset.py` and your algorithm under `models` (refer to `models/classification.py`), and design your config file. That't it!
 
 ### Note
 
-    * Please use `sh kill.sh` to kill.
+    * Please use `sh scripts/kill.sh` to kill.
