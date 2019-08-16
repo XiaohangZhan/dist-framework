@@ -116,4 +116,11 @@ def Cifar10(config, phase):
         transforms.ToTensor(),
         transforms.Normalize(config['data_mean'], config['data_div'])])
     return torchvision.datasets.CIFAR10(root='./data', train=phase=='train',
-                                        download=True, transform=transform)
+                                        download=False, transform=transform)
+
+def Cifar10Test(config):
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(config['data_mean'], config['data_div'])])
+    return torchvision.datasets.CIFAR10(root='./data', train=False,
+                                        download=False, transform=transform)

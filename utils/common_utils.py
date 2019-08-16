@@ -87,7 +87,7 @@ def accuracy(output, target, topk=(1,)):
 
     res = []
     for k in topk:
-        correct_k = correct[:k].view(-1).float().sum(0, keepdims=True)
+        correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
 
@@ -113,4 +113,16 @@ def load_state(path, model, optimizer=None):
     else:
         print("=> no checkpoint found at '{}'".format(path))
 
-
+def load_weights(path, model):
+    def map_func(storage, location):
+        return storage.cuda()
+    if not os.path.isfile(path):
+        raise Exception("File not exist: {}".format(path))
+    print("=> loading checkpoint '{}'".format(path))
+    weights = torch.load(path, map_location=map_func)
+    model.load_state_dict(weights, strict=False)
+    ckpt_keys = set(weights.keys())
+    own_keys = set(model.state_dict().keys())
+    missing_keys = own_keys - ckpt_keys
+    for k in missing_keys:
+        print('caution: missing keys from checkpoint {}: {}'.format(path, k))

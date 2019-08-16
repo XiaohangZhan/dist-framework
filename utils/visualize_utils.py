@@ -2,28 +2,19 @@ import numpy as np
 
 import torch
 
-def visualize_tensor(rgb, mask, eraser, target, common_tensors):
+def visualize_tensor(common_tensors, mean, div):
     '''
-        rgb: N3HW
-        mask: N1HW
-        eraser: N1HW
-        target: NHW
-        ct: N1HW
+        common_tensors: list of tensors, follow the same mean / div with image.
     '''
-    comb = (mask > 0).float()
-    comb[eraser == 1] = 0.5
-
-    together = [rgb.detach().cpu() * 255,
-                (mask > 0).float().repeat(1,3,1,1).detach().cpu() * 255,
-                comb.repeat(1,3,1,1).detach().cpu() * 255]
+    together = []
     for ct in common_tensors:
-        together.append(ct.detach().cpu().repeat(1,3,1,1) * 255)
-    target = target.detach().cpu().float()
-    if target.max().item() == 255: # ignore label
-        target[target == 255] = 0.5
-    together.append(target.unsqueeze(1).repeat(1,3,1,1) * 255)
+        together.append(torch.clamp(unormalize(ct.detach().cpu(), mean, div), 0, 255))
     together = torch.cat(together, dim=3)
     together = together.permute(1,0,2,3).contiguous()
     together = together.view(together.size(0), -1, together.size(3))
     return together
 
+def unormalize(tensor, mean, div):
+    for c, (m, d) in enumerate(zip(mean, div)):
+        tensor[:,c,:,:].mul_(d).add_(m)
+    return tensor

@@ -45,6 +45,8 @@ if __name__ == '__main__':
                         help="Offline validation.")
     parser.add_argument('--extract', action='store_true',
                         help="Offline feature extraction.")
+    parser.add_argument('--extract-output', type=str,
+                        help="Feature extraction, output file.")
     parser.add_argument('--evaluate', action='store_true',
                         help="Offline evaluation.")
     parser.add_argument('--local_rank', type=int, default=0,

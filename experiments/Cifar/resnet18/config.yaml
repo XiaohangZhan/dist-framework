@@ -11,25 +11,31 @@ model:
     backbone_arch: "resnet50"
     backbone_param:
         in_channels: 3
-        out_channels: 1000
+        out_channels: 10
 data:
     trainval_dataset: Cifar10
     root: "./data"
-    eval_dataset: Cifar10
-    extract_dataset: ImageDataset
-    batch_size: 32
+    eval_dataset: Cifar10Test
+    extract_dataset: Cifar10Test
+    data_mean: [0.5, 0.5, 0.5]
+    data_div: [0.5, 0.5, 0.5]
+    batch_size: 64
     batch_size_val: 32
+    batch_size_eval: 32
+    batch_size_extract: 32
     workers: 2
 
 trainer:
-    initial_eval: False
-    initial_val: True
+    initial_val: True # initial online validation
+    val_freq: 2000 # online validation frequency
+    initial_eval: True # initial online evaluation
+    eval: True # online eval or not
+    eval_freq: 2000 # online evaluation frequency
+    save_freq: 2000 # save checkpoints frequency
     print_freq: 100
-    val_freq: 2000
-    eval_freq: 2000
-    save_freq: 2000
     val_iter: -1 # iteration of validation, if -1, use all val set in validation
     val_disp_start_iter: 0 # start batch in tensorboard visualization
     val_disp_end_iter: 1 # end batch in tensorboard visualization
     loss_record: ['loss']
+    eval_record: ['top1', 'top5']
     tensorboard: True

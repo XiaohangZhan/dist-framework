@@ -91,7 +91,7 @@ def gather_tensors(input_array):
     return output
 
 def gather_tensors_batch(input_array, part_size=10):
-    # gather
+    # batch-wize gathering to avoid CUDA out of memory
     rank = dist.get_rank()
     all_features = []
     part_num = input_array.shape[0] // part_size + 1 if input_array.shape[0] % part_size != 0 else input_array.shape[0] // part_size

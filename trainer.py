@@ -124,23 +124,24 @@ class Trainer(object):
                 pin_memory=False,
                 sampler=val_sampler)
 
-        if not (args.validate or args.extract): # train or offline evaluation
-            eval_dataset = eval_class(args.data, 'val')
+        if not (args.validate or args.extract) and eval_class is not None: # train or offline evaluation
+            eval_dataset = eval_class(args.data)
             eval_sampler = utils.DistributedSequentialSampler(
                 eval_dataset)
             self.eval_loader = DataLoader(eval_dataset,
-                                          batch_size=1,
+                                          batch_size=args.data['batch_size_eval'],
                                           shuffle=False,
                                           num_workers=1,
                                           pin_memory=False,
                                           sampler=eval_sampler)
 
         if args.extract:  # extract
-            extract_dataset = extract_class(args.data, 'val')
+            assert extract_class is not None, 'Please specify extract_dataset'
+            extract_dataset = extract_class(args.data)
             extract_sampler = utils.DistributedSequentialSampler(
                 extract_dataset)
             self.extract_loader = DataLoader(extract_dataset,
-                                             batch_size=1,
+                                            batch_size=args.data['batch_size_extract'],
                                              shuffle=False,
                                              num_workers=1,
                                              pin_memory=False,
@@ -159,6 +160,7 @@ class Trainer(object):
 
         # extract
         if self.args.extract:
+            assert self.args.extract_output.endswith('.bin'), "extraction output file must end with .bin"
             self.extract()
             return
 
@@ -170,7 +172,7 @@ class Trainer(object):
         if self.args.trainer['initial_val']:
             self.validate('on_val')
 
-        if self.args.trainer['initial_eval']:
+        if self.args.trainer['eval'] and  self.args.trainer['initial_eval']:
             self.evaluate('on_eval')
 
         # train
@@ -187,7 +189,7 @@ class Trainer(object):
         self.model.switch_to('train')
 
         end = time.time()
-        for i, (image, target) in enumerate(self.train_loader):
+        for i, inputs in enumerate(self.train_loader):
             self.curr_step = self.start_iter + i
             self.lr_scheduler.step(self.curr_step)
             curr_lr = self.lr_scheduler.get_lr()[0]
@@ -195,14 +197,10 @@ class Trainer(object):
             # measure data loading time
             dtime_rec.update(time.time() - end)
 
-            assert image.shape[0] > 0
-            image = image.cuda()
-            target = target.cuda()
-
-            self.model.set_input(image, target)
+            self.model.set_input(*inputs)
             loss_dict = self.model.step()
             for k in loss_dict.keys():
-                recorder[k].update(utils.reduce_tensors(loss_dict[k]).item())
+                recorder[k].update(utils.reduce_tensors(loss_dict[k]).item() / self.world_size)
 
             btime_rec.update(time.time() - end)
             end = time.time()
@@ -245,8 +243,8 @@ class Trainer(object):
                 self.curr_step == self.args.model['total_iter']):
                 self.validate('on_val')
 
-            if (self.curr_step % self.args.trainer['eval_freq'] == 0 or
-                self.curr_step == self.args.model['total_iter']):
+            if ((self.curr_step % self.args.trainer['eval_freq'] == 0 or
+                self.curr_step == self.args.model['total_iter'])) and self.args.trainer['eval']:
                 self.evaluate('on_eval')
 
             
@@ -262,7 +260,7 @@ class Trainer(object):
 
         end = time.time()
         all_together = []
-        for i, (image, target) in enumerate(self.val_loader):
+        for i, inputs in enumerate(self.val_loader):
             if ('val_iter' in self.args.trainer and
                     self.args.trainer['val_iter'] != -1 and
                     i == self.args.trainer['val_iter']):
@@ -270,13 +268,10 @@ class Trainer(object):
 
             dtime_rec.update(time.time() - end)
 
-            image = image.cuda()
-            target = target.cuda()
-
-            self.model.set_input(image, target)
-            tensor_dict, loss_dict = self.model.eval()
+            self.model.set_input(*inputs)
+            tensor_dict, loss_dict = self.model.forward()
             for k in loss_dict.keys():
-                recorder[k].update(utils.reduce_tensors(loss_dict[k]).item())
+                recorder[k].update(utils.reduce_tensors(loss_dict[k]).item() / self.world_size)
             btime_rec.update(time.time() - end)
             end = time.time()
 
@@ -286,7 +281,8 @@ class Trainer(object):
                 disp_end = min(self.args.trainer['val_disp_end_iter'], len(self.val_loader))
                 if (i >= disp_start and i < disp_end):
                     all_together.append(
-                        utils.visualize_tensor(image, tensor_dict['common_tensors']))
+                        utils.visualize_tensor(tensor_dict['common_tensors'],
+                            self.args.data['data_mean'], self.args.data['data_div']))
                 if (i == disp_end - 1 and disp_end > disp_start):
                     all_together = torch.cat(all_together, dim=2)
                     grid = vutils.make_grid(all_together,
@@ -297,6 +293,7 @@ class Trainer(object):
                     if self.tb_logger is not None:
                         self.tb_logger.add_image('Image_' + phase, grid,
                                                  self.curr_step)
+
                     cv2.imwrite("{}/images/{}_{}.png".format(
                         self.args.exp_path, phase, self.curr_step),
                         grid.permute(1, 2, 0).numpy())
@@ -322,7 +319,76 @@ class Trainer(object):
         self.model.switch_to('train')
 
     def extract(self): # feature extraction
-        raise NotImplemented
+        btime_rec = utils.AverageMeter(0)
+        dtime_rec = utils.AverageMeter(0)
+        self.model.switch_to('eval')
+        end = time.time()
+        tensors_proc = []
+        for i, inputs in enumerate(self.extract_loader):
+            dtime_rec.update(time.time() - end)
+            self.model.set_input(*inputs)
+
+            tensors_proc.append(self.model.extract().cpu().numpy())
+
+            btime_rec.update(time.time() - end)
+            end = time.time()
+
+            # logging
+            if self.rank == 0:
+                self.logger.info(
+                    'Extract Iter: [{0}] ({1}/{2})\t'.format(
+                        self.curr_step, i, len(self.extract_loader)) +
+                    'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'.format(
+                        batch_time=btime_rec) +
+                    'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'.format(
+                        data_time=dtime_rec))
+
+        tensors_proc = np.concatenate(tensors_proc, axis=0)
+        tensors_gathered = utils.gather_tensors_batch(tensors_proc, part_size=20)
+        if self.rank == 0:
+            tensors_output = np.concatenate(tensors_gathered, axis=0)
+            if not os.path.isdir(os.path.dirname(self.args.extract_output)):
+                os.makedirs(os.path.dirname(self.args.extract_output))
+            print(self.args.extract_output)
+            tensors_output.tofile(self.args.extract_output)
+
+        self.model.switch_to('train')
 
     def evaluate(self, phase):
-        raise NotImplemented
+        btime_rec = utils.AverageMeter(0)
+        dtime_rec = utils.AverageMeter(0)
+        recorder = {}
+        for rec in self.args.trainer['eval_record']:
+            recorder[rec] = utils.AverageMeter()
+        self.model.switch_to('eval')
+        end = time.time()
+        for i, inputs in enumerate(self.eval_loader):
+            dtime_rec.update(time.time() - end)
+            self.model.set_input(*inputs)
+
+            eval_dict = self.model.evaluate()
+            for k in eval_dict.keys():
+                recorder[k].update(utils.reduce_tensors(eval_dict[k]).item() / self.world_size)
+
+            btime_rec.update(time.time() - end)
+            end = time.time()
+
+        # logging
+        if self.rank == 0:
+            eval_str = ""
+            for k in recorder.keys():
+                if self.tb_logger is not None and phase == 'on_eval':
+                    self.tb_logger.add_scalar('eval_{}'.format(k),
+                                              recorder[k].avg,
+                                              self.curr_step)
+                eval_str += '{}: {value.avg:.5g}\t'.format(
+                    k, value=recorder[k])
+
+            self.logger.info(
+                'Evaluation Iter: [{0}]\t'.format(self.curr_step) +
+                'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'.format(
+                    batch_time=btime_rec) +
+                'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'.format(
+                    data_time=dtime_rec) + eval_str)
+
+        self.model.switch_to('train')

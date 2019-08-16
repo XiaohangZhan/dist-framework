@@ -4,8 +4,8 @@
 
 With this framework, your can:
 
-* Customize your algorithm for any purpose.
-* High-efficiency distributed training, testing, feature extraction.
+* High extensibility: customize your algorithm for any purpose.
+* High-efficiency distributed training, validation, evaluation, feature extraction.
 * Warmlup learning rate in multiple steps.
 * 
 
@@ -23,3 +23,7 @@ With this framework, your can:
     ```
     sh experiments/ImageNet/resnet50/train.sh
     ```
+
+### Note
+
+    * Please use `sh kill.sh` to kill.

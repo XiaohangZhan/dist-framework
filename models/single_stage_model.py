@@ -32,11 +32,7 @@ class SingleStageModel(object):
 
         cudnn.benchmark = True
 
-    def set_input(self, image, target=None):
-        self.image = image
-        self.target = target
-
-    def eval(self, ret_loss=True):
+    def forward(self, ret_loss=True):
         pass
 
     def step(self):
@@ -51,7 +47,7 @@ class SingleStageModel(object):
             utils.load_state(path, self.model)
 
     def load_pretrain(self, load_path):
-        utils.load_state(load_path, self.model)
+        utils.load_weights(load_path, self.model)
 
     def save_state(self, path, Iter):
         path = os.path.join(path, "ckpt_iter_{}.pth.tar".format(Iter))
