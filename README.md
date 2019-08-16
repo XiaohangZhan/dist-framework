@@ -9,6 +9,14 @@ With this framework, your can:
 * Warmlup learning rate in multiple steps.
 *
 
+### Algorithms implemented
+
+1. Image classification: Cifar, ImageNet, Face
+2. Autoencoder, VAE (coming soon)
+3. GAN, CGAN (coming soon)
+4. Self-sup algorithms: colorization, conditional-motion-propagation (coming soon)
+5. Semantic Segmentation (coming soon)
+
 ### Requirements
 
 * PyTorch >= 0.4.1
