@@ -1,0 +1,40 @@
+model:
+    algo: "Classification" # your algorithm
+    total_iter: 56000
+    lr_steps: [32000, 48000] # when lr decays
+    lr_mults: [0.1, 0.1]
+    lr: 0.001 # lr in iter 0
+    weight_decay: 0.0001
+    optim: SGD
+    warmup_lr: [0.005, 0.01] # lr increase linearly to 0.005 at iter 1K, and to 0.01 at iter 2K
+    warmup_steps: [1000, 2000]
+    backbone_arch: "resnet50"
+    backbone_param:
+        in_channels: 3
+        out_channels: 1000
+data:
+    train_list:
+    train_root:
+    val_list:
+    val_root:
+    short_size: 256
+    crop_size: [224, 224] # width, height
+    aug:
+        shift: [-0.2, 0.2]
+        scale: [0.8, 1.2]
+    batch_size: 32
+    batch_size_val: 32
+    workers: 2
+
+trainer:
+    initial_eval: False
+    initial_val: True
+    print_freq: 100
+    val_freq: 2000
+    eval_freq: 2000
+    save_freq: 2000
+    val_iter: -1 # iteration of validation, if -1, use all val set in validation
+    val_disp_start_iter: 0 # start batch in tensorboard visualization
+    val_disp_end_iter: 1 # end batch in tensorboard visualization
+    loss_record: ['loss']
+    tensorboard: True
