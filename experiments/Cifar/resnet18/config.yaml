@@ -13,12 +13,10 @@ model:
         in_channels: 3
         out_channels: 1000
 data:
-    dataset: Cifar10
-    short_size: 256
-    crop_size: [224, 224] # width, height
-    aug:
-        shift: [-0.2, 0.2]
-        scale: [0.8, 1.2]
+    trainval_dataset: Cifar10
+    root: "./data"
+    eval_dataset: Cifar10
+    extract_dataset: ImageDataset
     batch_size: 32
     batch_size_val: 32
     workers: 2

@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 
 import models
 import utils
-from dataset import ImageDataset
+import dataset
 import pdb
 
 class Trainer(object):
@@ -84,9 +84,11 @@ class Trainer(object):
         self.curr_step = self.start_iter
 
         # lr scheduler & datasets
-        trainval_class = ImageDataset
-        eval_class = ImageDataset
-        extract_class = ImageDataset
+        trainval_class = dataset.__dict__[args.data['trainval_dataset']]
+        eval_class = (None if args.data['eval_dataset']
+                      is None else dataset.__dict__[args.data['eval_dataset']])
+        extract_class = (None if args.data['extract_dataset']
+                         is None else dataset.__dict__[args.data['extract_dataset']])
 
         if not (args.validate or args.extract or args.evaluate):  # train
             self.lr_scheduler = utils.StepLRScheduler(
