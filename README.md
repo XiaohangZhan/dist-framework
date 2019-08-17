@@ -28,7 +28,8 @@ With this framework, your can:
 
 ### Usage
 
-    For example, Cifar resnet18
+    * For example, Cifar resnet18
+
     ```
     sh experiments/Cifar/resnet18/train.sh # train, don't forget to open tensorboard for visualization
     sh experiments/Cifar/resnet18/validate.sh $ITER # offline validation
@@ -38,7 +39,7 @@ With this framework, your can:
 
 ### Extensibility
 
-    You need to write your own Dataset in `dataset.py` and your algorithm under `models` (refer to `models/classification.py`), and design your config file. That't it!
+    * You need to write your own Dataset in `dataset.py` and your algorithm under `models` (refer to `models/classification.py`), and design your config file. That't it!
 
 ### Note
 
