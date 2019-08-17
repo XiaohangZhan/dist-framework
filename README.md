@@ -22,15 +22,21 @@ With this framework, your can:
 * PyTorch >= 0.4.1
 * Others:
 
-    ```
+    ```sh
     pip install -r requirements.txt
     ```
 
 ### Usage
 
-    * For example, Cifar resnet18
+* For example, Cifar resnet18.
 
-    ```
+    ```sh
+    cd dist-framework
+    mkdir data
+    cd data
+    wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
+    tar -xf cifar-10-python.tar.gz
+    cd ..
     sh experiments/Cifar/resnet18/train.sh # train, don't forget to open tensorboard for visualization
     sh experiments/Cifar/resnet18/resume.sh $ITER # resume from iteration $ITER
     sh experiments/Cifar/resnet18/validate.sh $ITER # offline validation
@@ -40,8 +46,8 @@ With this framework, your can:
 
 ### Extensibility
 
-    * You need to write your own Dataset in `dataset.py` and your algorithm under `models` (refer to `models/classification.py`), and design your config file. That't it!
+* You need to write your own Dataset in `dataset.py` and your algorithm under `models` (refer to `models/classification.py`), and design your config file. That't it!
 
 ### Note
 
-    * Please use `sh scripts/kill.sh` to kill.
+* Please use `sh scripts/kill.sh` to kill.
