@@ -28,9 +28,15 @@ With this framework, your can:
 
 ### Usage
 
-* For example, Cifar resnet18
+* For example, Cifar resnet18.
 
     ```sh
+    cd dist-framework
+    mkdir data
+    cd data
+    wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
+    tar -xf cifar-10-python.tar.gz
+    cd ..
     sh experiments/Cifar/resnet18/train.sh # train, don't forget to open tensorboard for visualization
     sh experiments/Cifar/resnet18/validate.sh $ITER # offline validation
     sh experiments/Cifar/resnet18/evaluate.sh $ITER # offline evaluation
