@@ -126,6 +126,8 @@ class Trainer(object):
 
         if not (args.validate or args.extract) and eval_class is not None: # train or offline evaluation
             eval_dataset = eval_class(args.data)
+            assert len(eval_dataset) % (self.world_size * args.data['batch_size_eval']) == 0, \
+                "Otherwise the padded samples will be involved twice."
             eval_sampler = utils.DistributedSequentialSampler(
                 eval_dataset)
             self.eval_loader = DataLoader(eval_dataset,

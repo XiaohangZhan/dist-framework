@@ -28,7 +28,7 @@ With this framework, your can:
 
 ### Usage
 
-* For example, Cifar resnet18.
+* For example, train Cifar resnet20 in 14 minutes, get 92.59% accuracy.
 
     ```sh
     cd dist-framework
@@ -37,11 +37,11 @@ With this framework, your can:
     wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
     tar -xf cifar-10-python.tar.gz
     cd ..
-    sh experiments/Cifar/resnet18/train.sh # train, don't forget to open tensorboard for visualization
-    sh experiments/Cifar/resnet18/resume.sh $ITER # resume from iteration $ITER
-    sh experiments/Cifar/resnet18/validate.sh $ITER # offline validation
-    sh experiments/Cifar/resnet18/evaluate.sh $ITER # offline evaluation
-    sh experiments/Cifar/resnet18/extract.sh $ITER # feature extraction
+    sh experiments/classification/Cifar/resnet20/train.sh # train, don't forget to open tensorboard for visualization
+    sh experiments/classification/Cifar/resnet20/resume.sh $ITER # resume from iteration $ITER
+    sh experiments/classification/Cifar/resnet20/validate.sh $ITER # offline validation
+    sh experiments/classification/Cifar/resnet20/evaluate.sh $ITER # offline evaluation
+    sh experiments/classification/Cifar/resnet20/extract.sh $ITER # feature extraction
     ```
 
 ### Extensibility

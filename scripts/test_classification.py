@@ -1,6 +1,8 @@
 import os
+import sys
 import yaml
 import argparse
+sys.path.append('.')
 
 import torch
 
