@@ -8,9 +8,10 @@ import utils
 
 class SingleStageModel(object):
 
-    def __init__(self, params, dist_model=False):
+    def __init__(self, params, dist_model=False): # set dist_model to False in demo
         self.model = backbone.__dict__[params['backbone_arch']](**params['backbone_param'])
-        utils.init_weights(self.model, init_type='xavier') # random init here
+        # Random init here, so do not load pretrained model when constructing backbones.
+        utils.init_weights(self.model, init_type='xavier')
         self.model.cuda()
         if dist_model:
             self.model = utils.DistModule(self.model)
