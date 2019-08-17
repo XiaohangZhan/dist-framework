@@ -28,7 +28,7 @@ With this framework, your can:
 
 ### Usage
 
-* For example, train Cifar resnet20 in 14 minutes, get 92.59% accuracy.
+* For example, train Cifar-10 with resnet20 in 14 minutes, get 92.59% accuracy.
 
     ```sh
     cd dist-framework
