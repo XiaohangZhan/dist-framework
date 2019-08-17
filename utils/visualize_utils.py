@@ -8,7 +8,10 @@ def visualize_tensor(common_tensors, mean, div):
     '''
     together = []
     for ct in common_tensors:
-        together.append(torch.clamp(unormalize(ct.detach().cpu(), mean, div), 0, 255))
+        ct = unormalize(ct.detach().cpu(), mean, div)
+        if ct.max().item() <= 1:
+            ct *= 255
+        together.append(ct)
     together = torch.cat(together, dim=3)
     together = together.permute(1,0,2,3).contiguous()
     together = together.view(together.size(0), -1, together.size(3))

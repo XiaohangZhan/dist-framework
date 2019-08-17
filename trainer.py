@@ -346,10 +346,9 @@ class Trainer(object):
         tensors_proc = np.concatenate(tensors_proc, axis=0)
         tensors_gathered = utils.gather_tensors_batch(tensors_proc, part_size=20)
         if self.rank == 0:
-            tensors_output = np.concatenate(tensors_gathered, axis=0)
+            tensors_output = np.concatenate(tensors_gathered, axis=0)[:len(self.extract_dataset)]
             if not os.path.isdir(os.path.dirname(self.args.extract_output)):
                 os.makedirs(os.path.dirname(self.args.extract_output))
-            print(self.args.extract_output)
             tensors_output.tofile(self.args.extract_output)
 
         self.model.switch_to('train')
@@ -362,7 +361,7 @@ class Trainer(object):
             recorder[rec] = utils.AverageMeter()
         self.model.switch_to('eval')
         end = time.time()
-        for i, inputs in enumerate(self.eval_loader):
+        for i, inputs in enumerate(self.eval_loader): # padded samples will be evaluted twice.
             dtime_rec.update(time.time() - end)
             self.model.set_input(*inputs)
 

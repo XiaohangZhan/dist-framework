@@ -32,6 +32,7 @@ With this framework, your can:
 
     ```
     sh experiments/Cifar/resnet18/train.sh # train, don't forget to open tensorboard for visualization
+    sh experiments/Cifar/resnet18/resume.sh $ITER # resume from iteration $ITER
     sh experiments/Cifar/resnet18/validate.sh $ITER # offline validation
     sh experiments/Cifar/resnet18/evaluate.sh $ITER # offline evaluation
     sh experiments/Cifar/resnet18/extract.sh $ITER # feature extraction

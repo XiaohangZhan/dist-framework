@@ -112,9 +112,16 @@ class ImageDataset(Dataset):
 
 
 def Cifar10(config, phase):
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(config['data_mean'], config['data_div'])])
+    if phase == "train":
+        transform = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(config['data_mean'], config['data_div'])])
+    else:
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(config['data_mean'], config['data_div'])])
     return torchvision.datasets.CIFAR10(root='./data', train=phase=='train',
                                         download=False, transform=transform)
 
