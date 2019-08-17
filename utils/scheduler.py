@@ -81,9 +81,8 @@ class StepLRScheduler(_WarmUpLRScheduler):
         assert len(milestones) == len(lr_mults), "{} vs {}".format(milestones, lr_mults)
         for x in milestones:
             assert isinstance(x, int)
-        if not list(milestones) == sorted(milestones):
-            raise ValueError('Milestones should be a list of'
-                             ' increasing integers. Got {}', milestones)
+        assert all(x < y for x, y in zip(milestones[:-1], milestones[1:])), \
+            'Milestones should be a list of strictly increasing integers. Got {}'.format(milestones)
         self.milestones = milestones
         self.lr_mults = [1.0]
         for x in lr_mults:

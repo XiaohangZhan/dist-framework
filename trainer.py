@@ -346,7 +346,8 @@ class Trainer(object):
         tensors_proc = np.concatenate(tensors_proc, axis=0)
         tensors_gathered = utils.gather_tensors_batch(tensors_proc, part_size=20)
         if self.rank == 0:
-            tensors_output = np.concatenate(tensors_gathered, axis=0)[:len(self.extract_dataset)]
+            tensors_output = np.concatenate(
+                tensors_gathered, axis=0)[:len(self.extract_loader.dataset)]
             if not os.path.isdir(os.path.dirname(self.args.extract_output)):
                 os.makedirs(os.path.dirname(self.args.extract_output))
             tensors_output.tofile(self.args.extract_output)
