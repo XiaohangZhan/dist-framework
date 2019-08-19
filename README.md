@@ -2,12 +2,10 @@
 
 ### Features
 
-With this framework, your can:
+With this framework, you get:
 
 * High extensibility: customize your algorithm for any purpose.
 * High-efficiency distributed training, validation, evaluation, feature extraction.
-* Warmlup learning rate in multiple steps.
-*
 
 ### Algorithms implemented
 
