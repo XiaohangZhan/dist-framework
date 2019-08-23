@@ -27,9 +27,9 @@ class ImageLabelDataset(Dataset):
         self.img_transform = transforms.Compose([
             transforms.Normalize(config['data_mean'], config['data_div'])
         ])
-        with open(config['{}_list.txt'], 'r') as f:
+        with open(config['{}_list'.format(phase)], 'r') as f:
             lines = f.readlines()
-        self.fns = [os.path.join(config['{}_root'], l.split()[0]) for l in lines]
+        self.fns = [os.path.join(config['{}_root'.format(phase)], l.split()[0]) for l in lines]
         self.labels = [int(l.strip().split()[1]) for l in lines]
         self.crop_size = config['crop_size']
         self.short_size = config.get('short_size', None)
@@ -71,7 +71,7 @@ class ImageLabelDataset(Dataset):
 
 class ImageDataset(Dataset):
 
-    def __init__(self, config):
+    def __init__(self, config, phase):
         '''
         config: data config
         phase: train or val
@@ -79,9 +79,9 @@ class ImageDataset(Dataset):
         self.img_transform = transforms.Compose([
             transforms.Normalize(config['data_mean'], config['data_div'])
         ])
-        with open(config['{}_list.txt'], 'r') as f:
+        with open(config['{}_list'.format(phase)], 'r') as f:
             lines = f.readlines()
-        self.fns = [os.path.join(config['{}_root'], l.strip()) for l in lines]
+        self.fns = [os.path.join(config['{}_root'.format(phase)], l.strip()) for l in lines]
         self.crop_size = config['crop_size']
         self.short_size = config.get('short_size', None)
         self.long_size = config.get('long_size', None)
