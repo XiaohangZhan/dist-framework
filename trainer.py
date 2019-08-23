@@ -139,7 +139,7 @@ class Trainer(object):
 
         if args.extract:  # extract
             assert extract_class is not None, 'Please specify extract_dataset'
-            extract_dataset = extract_class(args.data)
+            extract_dataset = extract_class(args.data, 'extract')
             extract_sampler = utils.DistributedSequentialSampler(
                 extract_dataset)
             self.extract_loader = DataLoader(extract_dataset,
