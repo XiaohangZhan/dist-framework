@@ -14,7 +14,6 @@ model:
         out_channels: 10
 data:
     trainval_dataset: Cifar10
-    root: "./data"
     eval_dataset: Cifar10Test
     extract_dataset: Cifar10Test
     data_mean: [0.4914, 0.4822, 0.4465]

@@ -120,7 +120,7 @@ class Trainer(object):
                 sampler=val_sampler)
 
         if not (args.validate or args.extract) and eval_class is not None: # train or offline evaluation
-            eval_dataset = eval_class(args.data)
+            eval_dataset = eval_class(args.data, 'eval')
             assert len(eval_dataset) % (self.world_size * args.data['batch_size_eval']) == 0, \
                 "Otherwise the padded samples will be involved twice."
             eval_sampler = utils.DistributedSequentialSampler(
@@ -323,7 +323,10 @@ class Trainer(object):
         tensors_proc = []
         for i, inputs in enumerate(self.extract_loader):
             dtime_rec.update(time.time() - end)
-            self.model.set_input(*inputs)
+            if isinstance(inputs, tuple):
+                self.model.set_input(*inputs)
+            else:
+                self.model.set_input(inputs)
 
             tensors_proc.append(self.model.extract().cpu().numpy())
 

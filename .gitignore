@@ -110,5 +110,6 @@ events*
 images*
 *.npy
 *.tar
+**/*_slurm.sh
 
 *.swp

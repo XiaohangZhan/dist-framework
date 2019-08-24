@@ -8,8 +8,8 @@ from . import SingleStageModel
 
 class Classification(SingleStageModel):
 
-    def __init__(self, params, dist_model=False):
-        super(Classification, self).__init__(params, dist_model)
+    def __init__(self, params, load_path=None, dist_model=False):
+        super(Classification, self).__init__(params, load_path, dist_model)
         self.params = params
 
         # loss
@@ -17,7 +17,8 @@ class Classification(SingleStageModel):
 
     def set_input(self, image, target=None):
         self.image = image.cuda()
-        self.target = target.cuda()
+        if target is not None:
+            self.target = target.cuda()
 
     def inference(self): # for demo, in case inference procedure is different from eval
         raise NotImplemented

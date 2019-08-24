@@ -1,0 +1,49 @@
+model:
+    algo: "Classification" # your algorithm
+    total_iter: 350000
+    lr_steps: [200000, 300000] # when lr decays
+    lr_mults: [0.1, 0.1]
+    lr: 0.1 # lr in iter 0
+    optim: SGD # SGD or Adam. For Adam, pls specify beta1
+    weight_decay: 0.0001
+    warmup_lr: [0.2, 0.4]
+    warmup_steps: [1500, 3000]
+    backbone_arch: "resnet50"
+    backbone_param:
+        in_channels: 3
+        out_channels: 1000
+data:
+    trainval_dataset: ImageLabelDataset
+    train_list: "/mnt/lustre/share/images/meta/train.txt"
+    train_root: "/mnt/lustre/share/images/train"
+    val_list: "/mnt/lustre/share/images/meta/val.txt"
+    val_root: "/mnt/lustre/share/images/val"
+    eval_dataset: ImageLabelDataset
+    eval_list: "/mnt/lustre/share/images/meta/val.txt"
+    eval_root: "/mnt/lustre/share/images/val"
+    extract_dataset: ImageDataset
+    data_mean: [0.485, 0.456, 0.406]
+    data_div: [0.229, 0.224, 0.225]
+    input_size: 224
+    aug: ['RandomResizedCrop', 'RandomHorizontalFlip', 'RandomRotation', 'ColorJitter']
+    aug_args: [[224], [], [2], [0.2, 0.2, 0.2, 0.1]]
+    batch_size: 64 # batch size in each process
+    batch_size_val: 32
+    batch_size_eval: 50
+    batch_size_extract: 32
+    workers: 2
+
+trainer:
+    initial_val: True # initial online validation
+    val_freq: 10000 # online validation frequency
+    initial_eval: True # initial online evaluation
+    eval: True # online eval or not
+    eval_freq: 10000 # online evaluation frequency
+    save_freq: 10000 # save checkpoints frequency
+    print_freq: 100
+    val_iter: -1 # iteration of validation, if -1, use all val set in validation
+    val_disp_start_iter: 0 # start batch in tensorboard visualization
+    val_disp_end_iter: 1 # end batch in tensorboard visualization
+    loss_record: ['loss']
+    eval_record: ['top1', 'top5']
+    tensorboard: True
