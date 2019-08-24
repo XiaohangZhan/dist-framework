@@ -8,10 +8,13 @@ import utils
 
 class SingleStageModel(object):
 
-    def __init__(self, params, dist_model=False): # set dist_model to False in demo
+    def __init__(self, params, load_path=None, dist_model=False): # set dist_model to False in demo
         self.model = backbone.__dict__[params['backbone_arch']](**params['backbone_param'])
         # Random init here, so do not load pretrained model when constructing backbones.
         utils.init_weights(self.model, init_type='xavier')
+        # load pretrain here.
+        if load_path is not None:
+            utils.load_weights(load_path, self.model)
         self.model.cuda()
         if dist_model:
             self.model = utils.DistModule(self.model)
@@ -46,9 +49,6 @@ class SingleStageModel(object):
             utils.load_state(path, self.model, self.optim)
         else:
             utils.load_state(path, self.model)
-
-    def load_pretrain(self, load_path):
-        utils.load_weights(load_path, self.model)
 
     def save_state(self, path, Iter):
         path = os.path.join(path, "ckpt_iter_{}.pth.tar".format(Iter))

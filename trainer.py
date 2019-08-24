@@ -63,13 +63,8 @@ class Trainer(object):
                     '{}/logs/log_train.txt'.format(args.exp_path))
 
         # create model
-        self.model = models.__dict__[args.model['algo']](args.model,
-                                                         dist_model=True)
-
-
-        # load pretrained weights
-        if args.load_path is not None:
-            self.model.load_pretrain(args.load_path)
+        self.model = models.__dict__[args.model['algo']](
+            args.model, load_path=args.load_path, dist_model=True)
 
         # optionally resume from a checkpoint
         assert not (args.load_iter is not None and args.load_path is not None)
