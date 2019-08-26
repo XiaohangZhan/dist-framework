@@ -22,8 +22,8 @@ data:
     eval_list: "/mnt/lustre/share/images/meta/val.txt"
     eval_root: "/mnt/lustre/share/images/val"
     extract_dataset: ImageDataset
-    data_mean: [0.485, 0.456, 0.406]
-    data_div: [0.229, 0.224, 0.225]
+    data_mean: [123.675, 116.28, 103.53]
+    data_div: [58.395, 57.12, 57.375]
     input_size: 224
     aug: ['RandomResizedCrop', 'RandomHorizontalFlip', 'RandomRotation', 'ColorJitter']
     aug_args: [[224], [], [2], [0.2, 0.2, 0.2, 0.1]]
