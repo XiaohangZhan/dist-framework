@@ -17,7 +17,7 @@ data:
     eval_dataset: Cifar10Test
     extract_dataset: Cifar10Test
     data_mean: [0.4914, 0.4822, 0.4465]
-    data_div: [0.2023, 0.1994, 0.2010]
+    data_std: [0.2023, 0.1994, 0.2010]
     batch_size: 256 # batch size in each process
     batch_size_val: 32
     batch_size_eval: 50

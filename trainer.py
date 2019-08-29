@@ -279,7 +279,7 @@ class Trainer(object):
                 if (i >= disp_start and i < disp_end):
                     all_together.append(
                         utils.visualize_tensor(tensor_dict['common_tensors'],
-                            self.args.data['data_mean'], self.args.data['data_div']))
+                            self.args.data['data_mean'], self.args.data['data_std']))
                 if (i == disp_end - 1 and disp_end > disp_start):
                     all_together = torch.cat(all_together, dim=2)
                     grid = vutils.make_grid(all_together,
