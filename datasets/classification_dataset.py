@@ -32,7 +32,7 @@ class ImageLabelDataset(Dataset):
         ])
         self.img_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(config['data_mean'], config['data_div']),
+            transforms.Normalize(config['data_mean'], config['data_std']),
         ])
         with open(config['{}_list'.format(phase)], 'r') as f:
             lines = f.readlines()
@@ -68,7 +68,7 @@ class ImageDataset(Dataset):
         ])
         self.img_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(config['data_mean'], config['data_div']),
+            transforms.Normalize(config['data_mean'], config['data_std']),
         ])
         with open(config['{}_list'.format(phase)], 'r') as f:
             lines = f.readlines()
@@ -93,17 +93,17 @@ def Cifar10(config, phase):
             transforms.RandomCrop(32, padding=4),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize(config['data_mean'], config['data_div'])])
+            transforms.Normalize(config['data_mean'], config['data_std'])])
     else:
         transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(config['data_mean'], config['data_div'])])
+            transforms.Normalize(config['data_mean'], config['data_std'])])
     return torchvision.datasets.CIFAR10(root='./data', train=phase=='train',
                                         download=False, transform=transform)
 
 def Cifar10Test(config):
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(config['data_mean'], config['data_div'])])
+        transforms.Normalize(config['data_mean'], config['data_std'])])
     return torchvision.datasets.CIFAR10(root='./data', train=False,
                                         download=False, transform=transform)
