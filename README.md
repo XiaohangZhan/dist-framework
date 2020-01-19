@@ -1,4 +1,4 @@
-## A generic framework for distributed training with PyTorch.
+## A prototype for distributed training with PyTorch.
 
 ### Features
 
@@ -6,14 +6,6 @@ With this framework, you get:
 
 * High extensibility: customize your algorithm for any purpose.
 * High-efficiency distributed training, validation, evaluation, feature extraction.
-
-### Algorithms implemented
-
-1. Image classification: Cifar, ImageNet, Face
-2. Autoencoder, VAE (coming soon)
-3. GAN, CGAN (coming soon)
-4. Self-sup algorithms: colorization, conditional-motion-propagation (coming soon)
-5. Semantic Segmentation (coming soon)
 
 ### Requirements
 
