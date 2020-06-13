@@ -1,5 +1,8 @@
 ## A prototype for distributed training with PyTorch.
 
+### Note
+This repo will not be maintained.
+
 ### Features
 
 With this framework, you get:
